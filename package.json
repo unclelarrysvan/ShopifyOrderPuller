@@ -1,0 +1,16 @@
+{
+  "name": "shopify-order-puller",
+  "version": "0.0.1",
+  "description": "Pull all Shopify Orders from a Shopify Store and store them in a local DB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Stephen Crespo",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongoose": "^5.11.18",
+    "shopify-api-node": "^3.6.5"
+  }
+}
