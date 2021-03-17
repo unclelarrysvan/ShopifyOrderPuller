@@ -3,8 +3,8 @@ const Order = require('../models/order.js');
 
 async function getShopifyOrders() {
   const shopify = new Shopify({
-      shopName: process.env.SHOP_NAME,
-      accessToken: process.env.ACCESS_TOKEN
+    shopName: process.env.SHOP_NAME,
+    accessToken: process.env.ACCESS_TOKEN
   });
   shopify.order
     .list()
@@ -33,7 +33,7 @@ async function updateOrInitializeOrder(orderJson) {
   if (order === null) {
     order = new Order({
       name: orderJson['name'],
-      order_number: orderJson['number'],
+      number: orderJson['number'],
       json: json
     });
   } else {

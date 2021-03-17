@@ -1,6 +1,7 @@
 const express  = require ('express');
 const mongoose = require('mongoose');
 const routes   = require('./routes');
+const error    = require('./middleware/error');
 
 // Connect to DB
 // TODO: Make DB name customizable
@@ -13,4 +14,7 @@ const app = express();
 const port = process.env.PORT || 3001;
 
 app.use('/', routes);
+
+// Error catching
+app.use(error);
 app.listen(port, () => console.log(`Listening on port ${port}...`));
