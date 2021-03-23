@@ -27,11 +27,11 @@ async function saveShopifyOrder(orderJson) {
 }
 
 async function updateOrInitializeOrder(orderJson) {
-  var order = await Order.findOne({ name: orderJson['name'] }).exec()
+  var order = await Order.findOne({ name: orderJson['name'] })
   const json = JSON.stringify(orderJson);
 
   if (order === null) {
-    order = new Order({
+    order = await Order.create({
       name: orderJson['name'],
       number: orderJson['number'],
       json: json
