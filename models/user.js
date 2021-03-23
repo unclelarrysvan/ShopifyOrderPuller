@@ -1,17 +1,7 @@
 const bcrypt = require('bcrypt');
 const { Sequelize, Op, Model, DataTypes } = require("sequelize")
 
-// const sequelize = new Sequelize(process.env.DATABASE_URL)
-
-const sequelize = new Sequelize(
-  process.env.DATABASE_NAME,
-  process.env.DATABASE_USER,
-  process.env.DATABASE_PASSWORD,
-  {
-    host: process.env.DATABASE_HOST,
-    dialect: 'postgres'
-  }
-)
+const sequelize = new Sequelize(process.env.DATABASE_URL)
 const saltRounds = 10
 
 const User = sequelize.define('User', {
