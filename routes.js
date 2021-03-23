@@ -23,7 +23,7 @@ const pushOrder         = require('./services/shipstation.js');
 // }));
 
 router.get("/orders", async (req, res) => {
-  const orders = await Order.find()
+  const orders = await Order.findAll()
   res.json(orders)
 })
 
