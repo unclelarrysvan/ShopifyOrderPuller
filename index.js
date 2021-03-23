@@ -55,21 +55,21 @@ const adminBro = new AdminBro ({
   ],
   rootPath: '/admin',
 })
-// const router = AdminBroExpress.buildRouter (adminBro)
-const router = AdminBroExpress.buildAuthenticatedRouter(adminBro, {
-  authenticate: async (email, password) => {
-    const user = await User.findOne({ email })
-    if (user) {
-      return user;
-      const matched = await bcrypt.compare(password, user.encryptedPassword)
-      if (matched) {
-        return user
-      }
-    }
-    return false
-  },
-  cookiePassword: 'some-secret-password-used-to-secure-cookie',
-})
+const router = AdminBroExpress.buildRouter (adminBro)
+// const router = AdminBroExpress.buildAuthenticatedRouter(adminBro, {
+//   authenticate: async (email, password) => {
+//     const user = await User.findOne({ email })
+//     if (user) {
+//       return user;
+//       const matched = await bcrypt.compare(password, user.encryptedPassword)
+//       if (matched) {
+//         return user
+//       }
+//     }
+//     return false
+//   },
+//   cookiePassword: 'some-secret-password-used-to-secure-cookie',
+// })
 app.use(helmet());
 app.use(adminBro.options.rootPath, router);
 app.use(bodyParser.json());
