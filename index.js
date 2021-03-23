@@ -8,8 +8,19 @@ const bodyParser = require('body-parser');
 const Order = require('./models/order');
 const User = require('./models/user');
 const routes = require('./routes');
+const { Sequelize } = require("sequelize")
+const sequelize = new Sequelize(process.env.DATABASE_URL)
 
 AdminBro.registerAdapter(AdminBroSequelize);
+
+sequelize
+  .authenticate()
+  .then(() => {
+    console.log('DB connection has been established successfully.');
+  })
+  .catch(err => {
+    console.error('Unable to connect to the database:', err);
+})
 
 const app = express();
 
