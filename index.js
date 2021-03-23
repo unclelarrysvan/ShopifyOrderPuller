@@ -79,14 +79,11 @@ app.use(
   })
 );
 app.use('/', routes);
-<<<<<<< HEAD
 
 // Error catching
-app.use(error);
-app.listen(port, () => console.log(`Listening on port ${port}...`));
-=======
+//app.use(error);
+//app.listen(port, () => console.log(`Listening on port ${port}...`));
 app.get('/', (request, response) => {
   response.json({ info: 'Node.js, Express, and Postgres API' })
 });
 app.listen(8080, () => console.log('AdminBro is under localhost:8080/admin'));
->>>>>>> origin/adminbro

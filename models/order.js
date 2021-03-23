@@ -8,13 +8,8 @@ const Order = sequelize.define('Order', {
     allowNull: false
   },
   number: {
-<<<<<<< HEAD
-    type: String,
-    required: true
-=======
     type: DataTypes.STRING,
     allowNull: false
->>>>>>> origin/adminbro
   },
   json: {
     type: DataTypes.JSON,
