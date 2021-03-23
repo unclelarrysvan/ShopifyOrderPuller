@@ -86,4 +86,4 @@ app.use('/', routes);
 app.get('/', (request, response) => {
   response.json({ info: 'Node.js, Express, and Postgres API' })
 });
-app.listen(8080, () => console.log('AdminBro is under localhost:8080/admin'));
+app.listen(process.env.PORT, () => console.log('AdminBro is under /admin'));
