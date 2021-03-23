@@ -3,8 +3,10 @@ const Order = require('../models/order.js');
 
 async function getShopifyOrders() {
   const shopify = new Shopify({
-      shopName: process.env.SHOP_NAME,
-      accessToken: process.env.ACCESS_TOKEN
+      // shopName: process.env.SHOP_NAME,
+      // accessToken: process.env.ACCESS_TOKEN
+      shopName: 'crespo-test.myshopify.com',
+      accessToken: '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'
   });
   shopify.order
     .list()
@@ -27,13 +29,13 @@ async function saveShopifyOrder(orderJson) {
 }
 
 async function updateOrInitializeOrder(orderJson) {
-  var order = await Order.findOne({ name: orderJson['name'] }).exec()
+  var order = await Order.findOne({ name: orderJson['name'] })
   const json = JSON.stringify(orderJson);
 
   if (order === null) {
-    order = new Order({
+    order = await Order.create({
       name: orderJson['name'],
-      order_number: orderJson['number'],
+      number: orderJson['number'],
       json: json
     });
   } else {
