@@ -1,19 +1,32 @@
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
-// const error    = require('./middleware/error');
-// const AdminBro = require('admin-bro');
-// const AdminBroExpress = require('@admin-bro/express');
-// const AdminBroSequelize = require('@admin-bro/sequelize');
-const express  = require('express');
-const helmet  = require('helmet');
-const bodyParser = require('body-parser');
+// const express  = require('express');
+// const helmet  = require('helmet');
+// const bodyParser = require('body-parser');
 // const Order = require('./models/order');
 // const User = require('./models/user');
 // const routes = require('./routes');
 
-//AdminBro.registerAdapter(AdminBroSequelize);
-
+// XXXXXXXXX FEATHERS XXXXXXXXXXXXXXXXX
+const feathers = require('@feathersjs/feathers');
+const express = require('@feathersjs/express')
+const app = express(feathers());
+// Parse HTTP JSON bodies
+app.use(express.json());
+// // Parse URL-encoded params
+app.use(express.urlencoded({ extended: true }));
+// // Host static files from the current folder
+app.use(express.static(__dirname));
+// // Add REST API support
+app.configure(express.rest());
+// // Configure Socket.io real-time APIs
+// app.configure(socketio());
+// // Register an in-memory messages service
+// app.use('/messages', new MessageService());
+// // Register a nicer error handler than the default Express one
+app.use(express.errorHandler())
+// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 //  Objection/Knex
 const { Model } = require('objection');
@@ -53,73 +66,14 @@ createSchema();
 // XXXXXXXXXXXXXXXXXXXXXXX
 
 
-const app = express();
-
-// const resourceParent = {
-//   name: 'Resources',
-//   icon: 'Model',
-// }
-// 
-// const adminBro = new AdminBro ({
-//   resources: [
-//     { resource: Order, options: { parent: resourceParent } },
-//     {
-//       resource: User,
-//       options:  {
-//         parent: resourceParent
-//       },
-//       properties: {
-//         encrypted_password: {
-//           isVisible: false
-//         },
-//         password: {
-//           type: 'string',
-//           isVisible: {
-//             list: false, edit: true, filter: false, show: false
-//           }
-//         }
-//       },
-//       actions: {
-//         new: {
-//           before: async (request) => {
-//             if(request.payload.password) {
-//               request.payload = {
-//                 ...request.payload,
-//                 encryptedPassword: await bcrypt.hash(request.payload.password, 10),
-//                 password: undefined,
-//               }
-//             }
-//             return request
-//           }
-//         }
-//       }
-//     }
-//   ],
-//   rootPath: '/admin',
-// })
-// const router = AdminBroExpress.buildRouter (adminBro)
-// const router = AdminBroExpress.buildAuthenticatedRouter(adminBro, {
-//   authenticate: async (email, password) => {
-//     const user = await User.findOne({ email })
-//     if (user) {
-//       return user;
-//       const matched = await bcrypt.compare(password, user.encryptedPassword)
-//       if (matched) {
-//         return user
-//       }
-//     }
-//     return false
-//   },
-//   cookiePassword: 'some-secret-password-used-to-secure-cookie',
-// })
-app.use(helmet());
-// app.use(adminBro.options.rootPath, router);
-app.use(bodyParser.json());
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
+// const app = express();
+// app.use(helmet());
+// app.use(bodyParser.json());
+// app.use(
+//   bodyParser.urlencoded({
+//     extended: true,
+//   })
+// );
 //app.use('/', routes);
 
 
@@ -127,7 +81,7 @@ app.use(
 
 
 // TESTING ROUTES
-const router = express.Router();
+// const router = express.Router();
 const Shopify = require('shopify-api-node');
 
 async function getShopifyOrders() {
@@ -168,22 +122,18 @@ async function updateOrInitializeOrder(orderJson) {
   return order;
 }
 
-router.get("/orders", async (req, res) => {
-  const orders = await Order.query()
-  res.json(orders)
-})
-router.get('/pull_shopify_orders', async (req, res) => {
-  await getShopifyOrders();
-  res.send('Shopify Orders Pulled!');
-})
-app.use('/', router);
+// router.get("/orders", async (req, res) => {
+//   const orders = await Order.query()
+//   res.json(orders)
+// })
+// router.get('/pull_shopify_orders', async (req, res) => {
+//   await getShopifyOrders();
+//   res.send('Shopify Orders Pulled!');
+// })
+// app.use('/', router);
 app.get('/', (request, response) => {
   response.json({ info: 'Node.js, Express, and Postgres API' })
 });
 // XXXXXXXXXXXXXXXXXXX
 
-
-// Error catching
-//app.use(error);
 app.listen(process.env.PORT, () => console.log(`Listening on port ${process.env.PORT}...`));
-// app.listen(process.env.PORT, () => console.log('AdminBro is under /admin'));
