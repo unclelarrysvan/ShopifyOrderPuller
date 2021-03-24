@@ -1,4 +1,4 @@
-const express           = require ('express');
+const express           = require('express');
 const router            = express.Router();
 const Order             = require('./models/order.js');
 const pullShopifyOrders = require('./services/shopify_order_puller.js');
@@ -23,7 +23,7 @@ const pushOrder         = require('./services/shipstation.js');
 // }));
 
 router.get("/orders", async (req, res) => {
-  const orders = await Order.find()
+  const orders = await Order.query()
   res.json(orders)
 })
 

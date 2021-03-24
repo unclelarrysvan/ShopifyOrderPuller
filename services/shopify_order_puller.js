@@ -13,10 +13,9 @@ async function getShopifyOrders() {
 }
 
 async function saveShopifyOrder(orderJson) {
-  const order = await updateOrInitializeOrder(orderJson);
 
   try  {
-    const result = await order.save();
+    const result = await updateOrInitializeOrder(orderJson);
     console.log(result);
   }
   catch (ex) {
@@ -27,22 +26,18 @@ async function saveShopifyOrder(orderJson) {
 }
 
 async function updateOrInitializeOrder(orderJson) {
-  var order = await Order.findOne({ name: orderJson['name'] })
+  const existingOrder = await Order.query().findOne({ name: orderJson['name'] })
   const json = JSON.stringify(orderJson);
 
-  if (order === null) {
-    order = await Order.create({
+  if (existingOrder == null) {
+    return newOrder = await Order.query().insert({
       name: orderJson['name'],
       number: orderJson['number'],
       json: json
     });
   } else {
-    if (order.json !== json) { 
-      order.json = json;
-    }
+    return existingOrder;
   }
-
-  return order;
 }
 
 module.exports = getShopifyOrders;
