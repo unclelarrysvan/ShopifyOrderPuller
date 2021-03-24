@@ -1,40 +1,46 @@
 const Order = require('../models/order.js');
+const XML = require('xml');
 
-async function formatOrder(order_number) {
-  const order = await Order.query().findOne({ number: order_number });
-  const shipstation = {
-    shopName: 'abc',
-    accessToken: '123'
-  };
+async function formatOrders(params) {
+  const orders = await Order.query();
+  let order = formatOrder(orders[0]);
+  let result = [{ Orders: [ order ] }];
+
+  return XML(result);
+}
+
+function formatOrder(order) {
+  // const order = await Order.query().findOne({ number: order_number });
   orderJson = JSON.parse(order.json);
-  formattedOrder = {
-    orderNumber: order.number,
-    // orderKey: order.orderKey TODO
-    orderDate: orderJson['processed_at'],
-    // paymentDate: orderJson['processed_at'],
-    orderStatus: 'awaiting_shipment', // TODO: map this to shopify fulfillment status
-    customerEmail: orderJson['email'],
-    billTo: addressFromJson(orderJson['billing_address']),
-    shipTo: addressFromJson(orderJson['shipping_address']),
-    items: orderItemFromJson(orderJson['line_items']),
-    amountPaid: '',
-    taxAmount: '',
-    shippingAmount: '',
-    customerNotes: '',
-    internalNotes: '',
-    gift: '',
-    giftMessage: '',
-    paymentMethod: '',
-    paymentMethod: '',
-    requestedShippingService: '',
-    carrierCode: '',
-    serviceCode: '',
-    packageCode: '',
-    confirmation: '',
-    weight: {},
-    dimensions: {},
+  return {
+    Order: [
+      { orderNumber: order.number },
+      // orderKey: order.orderKey TODO
+      { orderDate: orderJson['processed_at'] },
+      { paymentDate: orderJson['processed_at'] },
+      { orderStatus: 'awaiting_shipment' }, // TODO: map this to shopify fulfillment status
+      { customerEmail: orderJson['email'] },
+      { billTo: addressFromJson(orderJson['billing_address']) },
+      { shipTo: addressFromJson(orderJson['shipping_address']) },
+      { items: orderItemFromJson(orderJson['line_items']) },
+      { amountPaid: '' },
+      { taxAmount: '' },
+      { shippingAmount: '' },
+      { customerNotes: '' },
+      { internalNotes: '' },
+      { gift: '' },
+      { giftMessage: '' },
+      { paymentMethod: '' },
+      { paymentMethod: '' },
+      { requestedShippingService: '' },
+      { carrierCode: '' },
+      { serviceCode: '' },
+      { packageCode: '' },
+      { confirmation: '' },
+      { weight: {} },
+      { dimensions: {} },
+    ]
   };
-  return formattedOrder;
 }
 
 function addressFromJson(json) {
@@ -80,4 +86,4 @@ function orderItemFromJson(itemJson) {
   };
 }
 
-module.exports = formatOrder;
+module.exports = formatOrders;

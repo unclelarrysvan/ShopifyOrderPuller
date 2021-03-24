@@ -2,7 +2,7 @@ const express           = require('express');
 const router            = express.Router();
 const Order             = require('./models/order.js');
 const pullShopifyOrders = require('./services/shopify_order_puller.js');
-const formatOrder         = require('./services/shipstation.js');
+const formatOrders      = require('./services/shipstation.js');
 // const asyncMiddleware   = require('./middleware/async');
 
 // router.get("/orders", asyncMiddleware(async (request, response) => {
@@ -33,16 +33,8 @@ router.get('/pull_shopify_orders', async (req, res) => {
 })
 
 router.get('/shipstation', async (req, res) => {
-  const orders = await Order.query();
-  // let formattedOrders = [];
-  // orders.forEach(
-  //   formattedOrders.push(await pushOrder(req.params['number']));
-  // // shipstation_response = await shipstation.pushOrder(request.number);
-  // // TODO: Add guard for failure
-  // );
-  console.log(orders[0]);
-  const order = await formatOrder(orders[0].number);
-  res.send(order);
+  const xml = await formatOrders(req);
+  res.send(xml);
 })
 
 module.exports = router;
