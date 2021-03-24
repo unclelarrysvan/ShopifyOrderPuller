@@ -1,13 +1,15 @@
 if (process.env.NODE_ENV !== 'production') {
-    require('dotenv').config();
+  require('dotenv').config();
 }
 const express  = require('express');
-const helmet  = require('helmet');
-const bodyParser = require('body-parser');
+
+// const helmet  = require('helmet');
+// const bodyParser = require('body-parser');
 // const Order = require('./models/order');
 // const User = require('./models/user');
 // const routes = require('./routes');
 
+const app = express();
 
 //  Objection/Knex
 const { Model } = require('objection');
@@ -18,10 +20,10 @@ const knex = Knex({
   client: 'pg',
   useNullAsDefault: true,
   connection: process.env.DATABASE_URL
-});
+})
 
 // Give the knex instance to objection.
-Model.knex(knex)
+Model.knex(knex);
 
 class Order extends Model {
   static get tableName() {
@@ -45,21 +47,6 @@ async function createSchema() {
 }
 createSchema();
 // XXXXXXXXXXXXXXXXXXXXXXX
-
-
-const app = express();
-app.use(helmet());
-app.use(bodyParser.json());
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
-//app.use('/', routes);
-
-
-
-
 
 // TESTING ROUTES
 const router = express.Router();
