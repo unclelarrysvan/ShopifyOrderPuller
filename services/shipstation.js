@@ -1,7 +1,7 @@
 const Order = require('../models/order.js');
 
-async function pushOrder(order_number) {
-  const order = await Order.findOne({ number: order_number }).exec();
+async function formatOrder(order_number) {
+  const order = await Order.query().findOne({ number: order_number });
   const shipstation = {
     shopName: 'abc',
     accessToken: '123'
@@ -35,7 +35,6 @@ async function pushOrder(order_number) {
     dimensions: {},
   };
   return formattedOrder;
-  // shipstation.pushOrder(formattedOrder);
 }
 
 function addressFromJson(json) {
@@ -81,4 +80,4 @@ function orderItemFromJson(itemJson) {
   };
 }
 
-module.exports = pushOrder;
+module.exports = formatOrder;
