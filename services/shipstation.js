@@ -4,6 +4,8 @@ const dateFormat = require('dateformat');
 
 async function formatOrders(params) {
   // TODO: take params into account for query
+  // Only grab orders that can be shipped
+  // Only grab order items for vendor
   const orders = await Order.query();
   let formattedOrders = orders.map((order) => formatOrder(order));
 
@@ -64,9 +66,9 @@ function billingAddress(json, email) {
   if (json === undefined) { return []; }
 
   return [
-    { Name:       json['name'] },
-    { Company:    json['company'] },
-    { Phone:      json['phone'] },
+    { Name:       'Stephen Crespo' },//json['name'] },
+    { Company:    '' },//json['company'] },
+    { Phone:      '8569047943' },//json['phone'] },
     { Email:      email }
   ];
 }
