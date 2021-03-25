@@ -23,8 +23,8 @@ function formatOrder(order) {
       { PaymentMethod: '' },
       // { CurrencyCode: orderJson['currency'] },
       { OrderTotal: orderJson['total_price'] },
-      { TaxAmount: '' },
-      { ShippingAmount: '' },
+      { TaxAmount: orderJson['total_tax'] },
+      { ShippingAmount: totalShipping(orderJson) },
       { CustomerNotes: '' },
       { InternalNotes: '' },
       { Gift: '' },
@@ -32,11 +32,11 @@ function formatOrder(order) {
       { Source: 'Shopify' },
       { Source: 'Shopify' },
       { Customer: customerInfo(orderJson) },
+      { Items: orderItemsFromJson(orderJson['line_items']) },
 
       // orderKey: order.orderKey TODO
       // { PaymentDate: formatDate(orderJson['processed_at']) },
       // { CustomerEmail: orderJson['email'] },
-      // { Items: orderItemsFromJson(orderJson['line_items']) },
       // { AmountPaid: '' },
       // { RequestedShippingService: '' },
       // { CarrierCode: '' },
@@ -124,7 +124,7 @@ function orderItemFromJson(itemJson) {
       { UnitPrice: itemJson['price'] },
       // { Location: itemJson['price'] },
       { Adjustment: false }, // TODO: Do we want to use this or just leave false?
-      { Options: [] }, // TODO needed?
+      // { Options: [] },
 
 
       // { taxAmount: itemJson['id'] }, // TODO
@@ -136,6 +136,12 @@ function orderItemFromJson(itemJson) {
       // { upc: itemJson['id' }, // TODO needed?
     ]
   };
+}
+
+function totalShipping(json) {
+  return json['shipping_lines'].reduce(function(accumulator, currentValue) {
+    accumulator + currentValue['price']
+  }, 0);
 }
 
 function formatDate(date) {
