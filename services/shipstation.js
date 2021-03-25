@@ -1,12 +1,13 @@
 const Order = require('../models/order.js');
 const XML = require('xml');
+const dateFormat = require('dateformat');
 
 async function formatOrders(params) {
+  // TODO: take params into account for query
   const orders = await Order.query();
-  let order = formatOrder(orders[0]);
-  let result = [{ Orders: [ order ] }];
+  let formattedOrders = orders.map((order) => formatOrder(order));
 
-  return XML(result);
+  return XML([{ Orders: formattedOrders }]);
 }
 
 function formatOrder(order) {
@@ -16,8 +17,8 @@ function formatOrder(order) {
     Order: [
       { OrderNumber: order.number },
       // orderKey: order.orderKey TODO
-      { OrderDate: orderJson['processed_at'] },
-      { PaymentDate: orderJson['processed_at'] },
+      { OrderDate: formatDate(orderJson['processed_at']) },
+      { PaymentDate: formatDate(orderJson['processed_at']) },
       { OrderStatus: 'awaiting_shipment' }, // TODO: map this to shopify fulfillment status
       { CustomerEmail: orderJson['email'] },
       { BillTo: addressFromJson(orderJson['billing_address']) },
@@ -86,6 +87,10 @@ function orderItemFromJson(itemJson) {
       // { upc: itemJson['id' },, // TODO needed?
     ]
   };
+}
+
+function formatDate(date) {
+  return dateFormat(date, "dd/mm/yyyy HH:MM TT");
 }
 
 module.exports = formatOrders;
