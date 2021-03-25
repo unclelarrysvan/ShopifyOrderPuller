@@ -16,32 +16,76 @@ function formatOrder(order) {
   return {
     Order: [
       { OrderNumber: order.number },
-      // orderKey: order.orderKey TODO
       { OrderDate: formatDate(orderJson['processed_at']) },
-      { PaymentDate: formatDate(orderJson['processed_at']) },
       { OrderStatus: 'awaiting_shipment' }, // TODO: map this to shopify fulfillment status
-      { CustomerEmail: orderJson['email'] },
-      { BillTo: addressFromJson(orderJson['billing_address']) },
-      { ShipTo: addressFromJson(orderJson['shipping_address']) },
-      { Items: orderItemsFromJson(orderJson['line_items']) },
-      { AmountPaid: '' },
+      { LastModified: orderJson['updated_at'] },
+      // { ShippingMethod: orderJson[] },
+      { PaymentMethod: '' },
+      { CurrencyCode: orderJson['currency'] },
+      { OrderTotal: orderJson['currency'] },
       { TaxAmount: '' },
       { ShippingAmount: '' },
       { CustomerNotes: '' },
       { InternalNotes: '' },
       { Gift: '' },
       { GiftMessage: '' },
-      { PaymentMethod: '' },
-      { PaymentMethod: '' },
-      { RequestedShippingService: '' },
-      { CarrierCode: '' },
-      { ServiceCode: '' },
-      { PackageCode: '' },
-      { Confirmation: '' },
-      { Weight: {} },
-      { Dimensions: {} },
+      { Source: 'Shopify' },
+      { Source: 'Shopify' },
+      { Customer: customerInfo(orderJson) },
+
+      // orderKey: order.orderKey TODO
+      // { PaymentDate: formatDate(orderJson['processed_at']) },
+      // { CustomerEmail: orderJson['email'] },
+      // { Items: orderItemsFromJson(orderJson['line_items']) },
+      // { AmountPaid: '' },
+      // { RequestedShippingService: '' },
+      // { CarrierCode: '' },
+      // { ServiceCode: '' },
+      // { PackageCode: '' },
+      // { Confirmation: '' },
+      // { Weight: {} },
+      // { Dimensions: {} },
     ]
   };
+}
+
+function customerInfo(json) {
+  return [
+    { CustomerCode: customerCode(json) },
+    { BillTo: billingAddress(json['billing_address'], json['email']) },
+    { ShipTo: shippingAddress(json['shipping_address']) },
+  ]
+}
+
+function customerCode(json) {
+  return(json.hasOwnProperty('customer') ? json['customer']['id'] : json['email']);
+}
+
+function billingAddress(json, email) {
+  if (json === undefined) { return []; }
+
+  return [
+    { Name:       json['name'] },
+    { Company:    json['company'] },
+    { Phone:      json['phone'] },
+    { Email:      email }
+  ];
+}
+
+function shippingAddress(json) {
+  if (json === undefined) { return []; }
+
+  return [
+    { Name:       json['name'] },
+    { Company:    json['company'] },
+    { Address1:    json['address1'] },
+    { Address2:    json['address2'] },
+    { City:       json['city'] },
+    { State:      json['province'] },
+    { PostalCode: json['zip'] },
+    { Country:    json['country_code'] },
+    { Phone:      json['phone'] },
+  ];
 }
 
 function addressFromJson(json) {
@@ -70,21 +114,26 @@ function orderItemsFromJson(itemsJson) {
 function orderItemFromJson(itemJson) {
   return {
     Item: [
-      { LineItemKey: itemJson['id'] },
+      { LineItemID: itemJson['id'] },
       { Sku: itemJson['sku'] },
       { Name: itemJson['title'] },
-      // { imageUrl: itemJson['id'] },
+      // { ImageUrl: itemJson['id'] },
       { Weight: itemJson['grams'] },
+      { WeightUnits: 'grams' }, // TODO: is this configurable or universal in shopify?
       { Quantity: itemJson['quantity'] },
       { UnitPrice: itemJson['price'] },
+      // { Location: itemJson['price'] },
+      { Adjustment: false }, // TODO: Do we want to use this or just leave false?
+      { Options: [] }, // TODO needed?
+
+
       // { taxAmount: itemJson['id'] }, // TODO
-      // { shippingAmount: itemJson['id' },, // TODO needed?
-      // { warehouseLocation: itemJson['id' },, // TODO needed?
-      // { options: itemJson['id' },, // TODO needed?
-      { ProductId: itemJson['product_id'] },
-      // { fulfillmentSku: itemJson['id' },, // TODO needed?
-      // { adjustment: itemJson['id' },, // TODO needed?
-      // { upc: itemJson['id' },, // TODO needed?
+      // { shippingAmount: itemJson['id' }, // TODO needed?
+      // { warehouseLocation: itemJson['id' }, // TODO needed?
+      // { ProductId: itemJson['product_id'] },
+      // { fulfillmentSku: itemJson['id' }, // TODO needed?
+      // { adjustment: itemJson['id' }, // TODO needed?
+      // { upc: itemJson['id' }, // TODO needed?
     ]
   };
 }
