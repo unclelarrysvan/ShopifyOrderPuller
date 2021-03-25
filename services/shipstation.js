@@ -18,7 +18,7 @@ function formatOrder(order) {
       { OrderNumber: order.number },
       { OrderDate: formatDate(orderJson['processed_at']) },
       { OrderStatus: 'awaiting_shipment' }, // TODO: map this to shopify fulfillment status
-      { LastModified: orderJson['updated_at'] },
+      { LastModified: formatDate(orderJson['updated_at']) },
       // { ShippingMethod: orderJson[] },
       { PaymentMethod: '' },
       { CurrencyCode: orderJson['currency'] },
@@ -139,7 +139,7 @@ function orderItemFromJson(itemJson) {
 }
 
 function formatDate(date) {
-  return dateFormat(date, "dd/mm/yyyy HH:MM TT");
+  return dateFormat(date, "dd/mm/yyyy HH:MM");
 }
 
 module.exports = formatOrders;
