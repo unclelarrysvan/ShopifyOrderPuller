@@ -21,7 +21,7 @@ function formatOrder(order) {
       { LastModified: formatDate(orderJson['updated_at']) },
       // { ShippingMethod: orderJson[] },
       { PaymentMethod: '' },
-      { CurrencyCode: orderJson['currency'] },
+      // { CurrencyCode: orderJson['currency'] },
       { OrderTotal: orderJson['currency'] },
       { TaxAmount: '' },
       { ShippingAmount: '' },
