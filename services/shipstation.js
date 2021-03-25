@@ -15,6 +15,8 @@ async function formatOrders(params) {
 function formatOrder(order) {
   // const order = await Order.query().findOne({ number: order_number });
   orderJson = JSON.parse(order.json);
+  if (orderJson['shipping_address'] === undefined) { return {}; }
+
   return {
     Order: [
       { OrderNumber: order.number },
@@ -63,8 +65,6 @@ function customerCode(json) {
 }
 
 function billingAddress(json, email) {
-  if (json === undefined) { return []; }
-
   return [
     { Name:       'Stephen Crespo' },//json['name'] },
     { Company:    '' },//json['company'] },
@@ -74,8 +74,6 @@ function billingAddress(json, email) {
 }
 
 function shippingAddress(json) {
-  if (json === undefined) { return []; }
-
   return [
     { Name:       json['name'] },
     { Company:    json['company'] },
