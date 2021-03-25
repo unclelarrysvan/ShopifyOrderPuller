@@ -22,7 +22,7 @@ function formatOrder(order) {
       // { ShippingMethod: orderJson[] },
       { PaymentMethod: '' },
       // { CurrencyCode: orderJson['currency'] },
-      { OrderTotal: orderJson['currency'] },
+      { OrderTotal: orderJson['total_price'] },
       { TaxAmount: '' },
       { ShippingAmount: '' },
       { CustomerNotes: '' },
