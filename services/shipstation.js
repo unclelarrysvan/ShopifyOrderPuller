@@ -114,7 +114,7 @@ function orderItemFromJson(itemJson) {
   return {
     Item: [
       { LineItemID: itemJson['id'] },
-      { Sku: itemJson['sku'] },
+      { SKU: itemJson['sku'] },
       { Name: itemJson['title'] },
       // { ImageUrl: itemJson['id'] },
       { Weight: itemJson['grams'] },
