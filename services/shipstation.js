@@ -30,7 +30,6 @@ function formatOrder(order) {
       // { Gift: '' },
       // { GiftMessage: '' },
       { Source: 'Shopify' },
-      { Source: 'Shopify' },
       { Customer: customerInfo(orderJson) },
       { Items: orderItemsFromJson(orderJson['line_items']) },
 
