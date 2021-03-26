@@ -21,16 +21,16 @@ function formatOrder(order) {
     Order: [
       { OrderNumber: order.number },
       { OrderDate: formatDate(orderJson['processed_at']) },
-      { OrderStatus: 'awaiting_shipment' }, // TODO: map this to shopify fulfillment status
+      { OrderStatus: orderJson['financial_status'] }, // TODO: map this to shopify fulfillment status
       { LastModified: formatDate(orderJson['updated_at']) },
       // { ShippingMethod: orderJson[] },
-      { PaymentMethod: '' },
+      // { PaymentMethod: '' },
       // { CurrencyCode: orderJson['currency'] },
       { OrderTotal: orderJson['total_price'] },
       { TaxAmount: orderJson['total_tax'] },
       { ShippingAmount: totalShipping(orderJson) },
-      { CustomerNotes: '' },
-      { InternalNotes: '' },
+      // { CustomerNotes: '' },
+      // { InternalNotes: '' },
       // { Gift: '' },
       // { GiftMessage: '' },
       { Source: 'Shopify' },
