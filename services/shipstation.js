@@ -9,7 +9,7 @@ async function formatOrders(params) {
   const orders = await Order.query();
   let formattedOrders = orders.map((order) => formatOrder(order));
 
-  return XML([{ Orders: formattedOrders }]);
+  return XML([{ Orders: formattedOrders }], { declaration: true });
 }
 
 function formatOrder(order) {
@@ -19,19 +19,19 @@ function formatOrder(order) {
 
   return {
     Order: [
-      { OrderID: orderJson['id'] },
-      { OrderNumber: order.number },
+      { OrderID: { _cdata: orderJson['id'] } },
+      { OrderNumber: { _cdata: order.number } },
       { OrderDate: formatDate(orderJson['processed_at']) },
-      { OrderStatus: orderJson['financial_status'] }, // TODO: map this to shopify fulfillment status
+      { OrderStatus: { _cdata: orderJson['financial_status'] } }, // TODO: map this to shopify fulfillment status
       { LastModified: formatDate(orderJson['updated_at']) },
-      // { ShippingMethod: orderJson[] },
-      // { PaymentMethod: '' },
+      // { ShippingMethod: { _cdata: orderJson[] } },
+      // { PaymentMethod: { _cdata: '' } },
       // { CurrencyCode: orderJson['currency'] },
       { OrderTotal: orderJson['total_price'] },
       { TaxAmount: orderJson['total_tax'] },
       { ShippingAmount: totalShipping(orderJson) },
-      // { CustomerNotes: '' },
-      // { InternalNotes: '' },
+      // { CustomerNotes: { _cdata: '' } },
+      // { InternalNotes: { _cdata: '' } },
       // { Gift: '' },
       // { GiftMessage: '' },
       { Source: 'Shopify' },
@@ -55,7 +55,7 @@ function formatOrder(order) {
 
 function customerInfo(json) {
   return [
-    { CustomerCode: customerCode(json) },
+    { CustomerCode: { _cdata: customerCode(json) } },
     { BillTo: billingAddress(json['billing_address'], json['email']) },
     { ShipTo: shippingAddress(json['shipping_address']) },
   ]
@@ -67,24 +67,24 @@ function customerCode(json) {
 
 function billingAddress(json, email) {
   return [
-    { Name:       'Stephen Crespo' },//json['name'] },
-    { Company:    '' },//json['company'] },
-    { Phone:      '8569047943' },//json['phone'] },
-    { Email:      email }
+    { Name:       { _cdata: 'Stephen Crespo' } },//json['name'] },
+    { Company:    { _cdata: '' } },//json['company'] },
+    { Phone:      { _cdata: '8569047943' } },//json['phone'] },
+    { Email:      { _cdata: email } }
   ];
 }
 
 function shippingAddress(json) {
   return [
-    { Name:       json['name'] },
-    { Company:    json['company'] },
-    { Address1:    json['address1'] },
-    { Address2:    json['address2'] },
-    { City:       json['city'] },
-    { State:      json['province'] },
-    { PostalCode: json['zip'] },
-    { Country:    json['country_code'] },
-    { Phone:      json['phone'] },
+    { Name:       { _cdata: json['name'] } },
+    { Company:    { _cdata: json['company'] } },
+    { Address1:    { _cdata: json['address1'] } },
+    { Address2:    { _cdata: json['address2'] } },
+    { City:       { _cdata: json['city'] } },
+    { State:      { _cdata: json['province'] } },
+    { PostalCode: { _cdata: json['zip'] } },
+    { Country:    { _cdata: json['country_code'] } },
+    { Phone:      { _cdata: json['phone'] } },
   ];
 }
 
@@ -114,15 +114,15 @@ function orderItemsFromJson(itemsJson) {
 function orderItemFromJson(itemJson) {
   return {
     Item: [
-      { LineItemID: itemJson['id'] },
-      { SKU: itemJson['sku'] },
-      { Name: itemJson['title'] },
-      // { ImageUrl: itemJson['id'] },
+      { LineItemID: { _cdata: itemJson['id'] } },
+      { SKU: { _cdata: itemJson['sku'] } },
+      { Name: { _cdata: itemJson['title'] } },
+      // { ImageUrl: { _cdata: itemJson['id'] } },
       { Weight: itemJson['grams'] },
       { WeightUnits: 'grams' }, // TODO: is this configurable or universal in shopify?
       { Quantity: itemJson['quantity'] },
       { UnitPrice: itemJson['price'] },
-      // { Location: itemJson['price'] },
+      // { Location: { _cdata: itemJson['price'] } },
       { Adjustment: false }, // TODO: Do we want to use this or just leave false?
       // { Options: [] },
 
