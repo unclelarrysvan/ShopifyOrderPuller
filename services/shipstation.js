@@ -146,7 +146,7 @@ function totalShipping(json) {
 }
 
 function formatDate(date) {
-  return dateFormat(date, "dd/mm/yyyy HH:MM");
+  return dateFormat(date, "mm/dd/yyyy HH:MM");
 }
 
 module.exports = formatOrders;
