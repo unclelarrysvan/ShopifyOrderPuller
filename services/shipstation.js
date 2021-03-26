@@ -7,7 +7,8 @@ async function formatOrders(params) {
   // Only grab orders that can be shipped
   // Only grab order items for vendor
   const orders = await Order.query();
-  let formattedOrders = orders.map((order) => formatOrder(order));
+  const formattedOrders = orders.map((order) => formatOrder(order));
+  formattedOrders.unshift({ _attr: { pages: 1 } });
 
   return XML([{ Orders: formattedOrders }], { declaration: true });
 }
