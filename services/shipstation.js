@@ -19,6 +19,7 @@ function formatOrder(order) {
 
   return {
     Order: [
+      { OrderId: orderJson['id'] },
       { OrderNumber: order.number },
       { OrderDate: formatDate(orderJson['processed_at']) },
       { OrderStatus: orderJson['financial_status'] }, // TODO: map this to shopify fulfillment status
