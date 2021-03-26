@@ -139,7 +139,7 @@ function orderItemFromJson(itemJson) {
 
 function totalShipping(json) {
   return json['shipping_lines'].reduce(function(accumulator, currentValue) {
-    accumulator + currentValue['price']
+    return accumulator + parseFloat(currentValue['price'])
   }, 0);
 }
 
