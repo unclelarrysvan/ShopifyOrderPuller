@@ -34,6 +34,7 @@ router.get('/pull_shopify_orders', async (req, res) => {
 
 router.get('/shipstation', async (req, res) => {
   const xml = await formatOrders(req);
+  res.type('application/xml');
   res.send(xml);
 })
 
