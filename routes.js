@@ -1,8 +1,10 @@
 const express           = require('express');
 const router            = express.Router();
+const bodyParser = require('body-parser');
 const Order             = require('./models/order.js');
+const Dropshipper       = require('./models/dropshipper.js');
 const pullShopifyOrders = require('./services/shopify_order_puller.js');
-const formatOrders      = require('./services/shipstation.js');
+const { formatOrders, formatOrdersForVendor } = require('./services/shipstation.js');
 // const asyncMiddleware   = require('./middleware/async');
 
 // router.get("/orders", asyncMiddleware(async (request, response) => {
@@ -36,6 +38,32 @@ router.get('/shipstation', async (req, res) => {
   const xml = await formatOrders(req);
   res.type('text/xml');
   res.send(xml);
+})
+
+// router.post('/shipstation', async (req, res) => {
+//   const xml = await formatOrders(req);
+//   res.type('text/xml');
+//   res.send(xml);
+// })
+
+
+router.get('/dropshippers/:id/shipstation', async (req, res) => {
+  const xml = await formatOrdersForVendor(req.params);
+  res.type('text/xml');
+  res.send(xml);
+})
+
+router.get("/dropshippers", async (req, res) => {
+  const orders = await Dropshipper.query();
+  res.json(orders);
+})
+
+router.post("/dropshippers", bodyParser.json(), async (req, res) => {
+  const dropshipper = await Dropshipper.query().insert({
+    name: req.body.name,
+    shopify_vendor: req.body.shopify_vendor
+  });
+  res.json(dropshipper);
 })
 
 module.exports = router;

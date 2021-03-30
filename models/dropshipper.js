@@ -10,9 +10,9 @@ const knex = Knex({
 
 Model.knex(knex);
 
-class Order extends Model {
+class Dropshipper extends Model {
   static get tableName() {
-    return 'orders';
+    return 'dropshippers';
   }
 
   async $beforeInsert() {
@@ -22,27 +22,23 @@ class Order extends Model {
   async $beforeUpdate() {
     this.updated_at = new Date().toISOString();
   }
-
-  itemsForVendor(vendor) {
-    return JSON.parse(this.json)['line_items'].filter((item) => item['vendor'].toUpperCase() == vendor.toUpperCase())
-  }
 }
 
 async function createSchema() {
-  if (await knex.schema.hasTable('orders')) {
+  if (await knex.schema.hasTable('dropshippers')) {
     return;
   }
 
   // Create database schema. You should use knex migration files
   // to do this. We create it here for simplicity.
-  await knex.schema.createTable('orders', table => {
+  await knex.schema.createTable('dropshippers', table => {
     table.increments('id').primary();
     table.string('name');
-    table.string('number');
-    table.text('json');
+    table.string('shopify_vendor');
     table.timestamps();
   });
 }
 createSchema();
 
-module.exports = Order;
+module.exports = Dropshipper;
+

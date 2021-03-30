@@ -1,6 +1,57 @@
 const Order = require('../models/order.js');
+const Dropshipper = require('../models/dropshipper.js');
 const XML = require('xml');
 const dateFormat = require('dateformat');
+
+async function formatOrdersForVendor(params) {
+  // Can filter orders by store eventually
+  const orders = await Order.query();
+  const dropshipper = await Dropshipper.query().findById(params['id']);
+
+  const formattedOrders = [];
+  for (order of orders) {
+    if (orderContainsVendorItems(order, dropshipper.shopify_vendor)) {
+      formattedOrders.push(formatOrderByVendor(order, dropshipper.shopify_vendor));
+    } else {
+      continue
+    }
+  }
+  formattedOrders.unshift({ _attr: { pages: 1 } });
+
+  return XML([{ Orders: formattedOrders }], { declaration: true });
+}
+
+function orderContainsVendorItems(order, vendor) {
+  return order.itemsForVendor(vendor).length > 0;
+}
+
+function formatOrderByVendor(order, vendor) {
+  orderJson = JSON.parse(order.json);
+  if (orderJson['shipping_address'] === undefined) { return {}; }
+
+  return {
+    Order: [
+      { OrderID: { _cdata: orderJson['id'] } },
+      { OrderNumber: { _cdata: order.number } },
+      { OrderDate: formatDate(orderJson['processed_at']) },
+      { OrderStatus: { _cdata: orderJson['financial_status'] } }, // TODO: map this to shopify fulfillment status
+      { LastModified: formatDate(orderJson['updated_at']) },
+      // { ShippingMethod: { _cdata: orderJson[] } },
+      // { PaymentMethod: { _cdata: '' } },
+      // { CurrencyCode: orderJson['currency'] },
+      { OrderTotal: orderJson['total_price'] },
+      { TaxAmount: orderJson['total_tax'] },
+      { ShippingAmount: totalShipping(orderJson) },
+      // { CustomerNotes: { _cdata: '' } },
+      // { InternalNotes: { _cdata: '' } },
+      // { Gift: '' },
+      // { GiftMessage: '' },
+      { Source: 'Shopify' },
+      { Customer: customerInfo(orderJson) },
+      { Items: orderItemsFromJson(order.itemsForVendor(vendor)) },
+    ]
+  };
+}
 
 async function formatOrders(params) {
   // TODO: take params into account for query
@@ -149,4 +200,7 @@ function formatDate(date) {
   return dateFormat(date, "mm/dd/yyyy HH:MM");
 }
 
-module.exports = formatOrders;
+module.exports = {
+  formatOrders: formatOrders,
+  formatOrdersForVendor
+};
