@@ -26,6 +26,10 @@ class Order extends Model {
   itemsForVendor(vendor) {
     return JSON.parse(this.json)['line_items'].filter((item) => item['vendor'].toUpperCase() == vendor.toUpperCase())
   }
+
+  lineItems() {
+    JSON.parse(order.json)['line_items']
+  }
 }
 
 async function createSchema() {

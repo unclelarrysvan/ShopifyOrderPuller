@@ -2,10 +2,12 @@ const Order = require('../models/order.js');
 const Dropshipper = require('../models/dropshipper.js');
 const XML = require('xml');
 const dateFormat = require('dateformat');
+const OrderDetails = require('./order_details.js');
 
 async function formatOrdersForVendor(params) {
-  // Can filter orders by store eventually
-  const orders = await Order.query();
+  // TODO: Can filter orders by store eventually
+  // TODO: Should we ping Shopify here and save the orders on the fly or have a separate job to pull orders?
+  const orders = await Order.query().whereBetween('created_at', [params['start_date'], params['end_date']]);
   const dropshipper = await Dropshipper.query().findById(params['id']);
 
   const formattedOrders = [];
@@ -16,6 +18,7 @@ async function formatOrdersForVendor(params) {
       continue
     }
   }
+  // TODO: Page orders
   formattedOrders.unshift({ _attr: { pages: 1 } });
 
   return XML([{ Orders: formattedOrders }], { declaration: true });
@@ -39,7 +42,7 @@ function formatOrderByVendor(order, vendor) {
       // { ShippingMethod: { _cdata: orderJson[] } },
       // { PaymentMethod: { _cdata: '' } },
       // { CurrencyCode: orderJson['currency'] },
-      { OrderTotal: orderJson['total_price'] },
+      { OrderTotal: OrderDetails.totalForVendor(orderJson, vendor) },
       { TaxAmount: orderJson['total_tax'] },
       { ShippingAmount: totalShipping(orderJson) },
       // { CustomerNotes: { _cdata: '' } },
@@ -49,58 +52,6 @@ function formatOrderByVendor(order, vendor) {
       { Source: 'Shopify' },
       { Customer: customerInfo(orderJson) },
       { Items: orderItemsFromJson(order.itemsForVendor(vendor)) },
-    ]
-  };
-}
-
-async function formatOrders(params) {
-  // TODO: take params into account for query
-  // Only grab orders that can be shipped
-  // Only grab order items for vendor
-  const orders = await Order.query();
-  const formattedOrders = orders.map((order) => formatOrder(order));
-  formattedOrders.unshift({ _attr: { pages: 1 } });
-
-  return XML([{ Orders: formattedOrders }], { declaration: true });
-}
-
-function formatOrder(order) {
-  // const order = await Order.query().findOne({ number: order_number });
-  orderJson = JSON.parse(order.json);
-  if (orderJson['shipping_address'] === undefined) { return {}; }
-
-  return {
-    Order: [
-      { OrderID: { _cdata: orderJson['id'] } },
-      { OrderNumber: { _cdata: order.number } },
-      { OrderDate: formatDate(orderJson['processed_at']) },
-      { OrderStatus: { _cdata: orderJson['financial_status'] } }, // TODO: map this to shopify fulfillment status
-      { LastModified: formatDate(orderJson['updated_at']) },
-      // { ShippingMethod: { _cdata: orderJson[] } },
-      // { PaymentMethod: { _cdata: '' } },
-      // { CurrencyCode: orderJson['currency'] },
-      { OrderTotal: orderJson['total_price'] },
-      { TaxAmount: orderJson['total_tax'] },
-      { ShippingAmount: totalShipping(orderJson) },
-      // { CustomerNotes: { _cdata: '' } },
-      // { InternalNotes: { _cdata: '' } },
-      // { Gift: '' },
-      // { GiftMessage: '' },
-      { Source: 'Shopify' },
-      { Customer: customerInfo(orderJson) },
-      { Items: orderItemsFromJson(orderJson['line_items']) },
-
-      // orderKey: order.orderKey TODO
-      // { PaymentDate: formatDate(orderJson['processed_at']) },
-      // { CustomerEmail: orderJson['email'] },
-      // { AmountPaid: '' },
-      // { RequestedShippingService: '' },
-      // { CarrierCode: '' },
-      // { ServiceCode: '' },
-      // { PackageCode: '' },
-      // { Confirmation: '' },
-      // { Weight: {} },
-      // { Dimensions: {} },
     ]
   };
 }
@@ -201,6 +152,6 @@ function formatDate(date) {
 }
 
 module.exports = {
-  formatOrders: formatOrders,
+  //formatOrders: formatOrders,
   formatOrdersForVendor
 };
